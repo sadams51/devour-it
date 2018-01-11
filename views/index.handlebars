@@ -1,0 +1,122 @@
+{{!-- setup this file to have template that handlebars can render onto  --}}
+{{!-- create button in here that will submit the user input into the database --}}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Devour It Burger App</title>
+</head>
+<body>
+	
+	<h1>DEVOUR IT</h1>
+
+
+	
+	<div class="uneaten">
+		<h2>Burgers To Eat</h2>
+
+		<ul id="uneatenList">
+			 {{#each burgers}}
+				{{#unless devoured}}
+					<li id="list{{id}}" data_burger_name="{{burger_name}}">{{burger_name}} 
+						<div>
+								<button type="" id="{{id}}" class="devourIt">Devour It!</button>
+						</div>
+
+					</li>
+				{{/unless}}	
+			{{/each}}
+			
+			
+		</ul>	
+	</div>
+
+	<div>
+	<h2>Add a Burger</h2>
+		<form class="create-form" action="/burgers/create" method="POST">
+
+			<div class="form-group">
+				<label for="br">New Burger:</label> <br>
+				<input type="text" id="br" name="burger_name">
+			</div>
+
+			<button type="submit" class="addBurger">Add</button>
+		</form>
+	</div>
+
+	<div class="eaten">
+		<h2>Devoured</h2>
+
+		<ul>
+			{{#each burgers}}
+				{{#if devoured}}
+					<li>
+						<div class="devouredBurgers">
+							{{burger_name}}
+						</div>
+					</li>
+				{{/if}}
+			{{/each}}		
+
+		</ul>
+	</div>
+
+
+
+<script type="text/javascript">
+
+$(".addBurger").on("submit", function(event) {
+	event.preventDefault();
+
+
+	var newBurger = {
+		burger: '$("#br [name=burger_name]").val().trim()'
+	};
+
+	// function addBurger() {
+	// 	$("#uneatenList").append('<li>$("#br [name=burger_name]").val().trim()</li>');
+	// };
+	// addBurger();
+
+	$.ajax("/burgers/create", {
+		type: "POST",
+		data: newBurger
+	}).then(
+		function() {
+			console.log("new burger added");
+
+			location.reload();
+		});
+});	
+
+$(".devourIt").on("click", function(event) {
+	event.preventDefault();
+	console.log($(this).attr('id'));
+
+	var id = $(this).attr('id').trim();
+
+
+	function devourBurger() {
+		var devouredBurger = $("list" + id);
+		console.log(devouredBurger);
+		// $("#eaten").append($("list" + id [data_burger_name]"</li>"))
+	}
+
+
+
+	$.ajax("/burgers/" + id, {
+		type: "PUT",
+		data: {}
+	}).then(function() {
+		console.log("now devoured");
+
+		location.reload();
+	})
+
+});
+
+
+</script>
+
+</body>
+</html>
